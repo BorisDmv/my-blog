@@ -199,11 +199,12 @@ onBeforeUnmount(() => {
             </header>
 
             <div class="flex items-center gap-4 mb-12 border-t border-b border-gray-100 py-6 dark:border-white/10">
-              <span class="w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden">
+              <span class="w-15 h-15 flex items-center justify-center overflow-hidden">
                 <img
-                  src="@/assets/authorimg.png"
+                  src="@/assets/authorimage.png"
                   :alt="post?.author ?? 'Author'"
-                  class="w-16 h-16 object-cover"
+                  class="w-15 h-15 rounded-full object-cover border-2 border-transparent"
+                  style="background: none;"
                 />
               </span>
               <div>
