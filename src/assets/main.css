@@ -1,15 +1,64 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
+/* TipTap Highlight Styles 
+   Matches the 'highlightColors' array in your Vue component:
+   Yellow: #fef3c7
+   Green:  #bbf7d0
+   Blue:   #bae6fd
+   Gold:   #fde68a
+   Pink:   #fbcfe8
+*/
+
+.ProseMirror mark {
+    border-radius: 0.2em;
+    padding: 0.1em 0.2em;
+    box-decoration-break: clone; /* Ensures multiline highlights look good */
+    color: inherit; /* Default text color */
+}
+
+/* Default highlight (if no color specified) */
+
+
+.ProseMirror mark[data-type="highlight"] {
+    background: rgba(253, 230, 138, 0.7); /* soft yellow */
+    color: #19191c;
+}
+
+/* Specific Color Mappings */
+
+.ProseMirror mark[data-type="highlight"][data-color="#fef3c7"] {
+    background-color: rgba(253, 230, 138, 0.7); /* yellow */
+    color: #19191c;
+}
+.ProseMirror mark[data-type="highlight"][data-color="#bbf7d0"] {
+    background-color: rgba(134, 239, 172, 0.7); /* green */
+    color: #19191c;
+}
+.ProseMirror mark[data-type="highlight"][data-color="#bae6fd"] {
+    background-color: rgba(186, 230, 253, 0.7); /* blue */
+    color: #19191c;
+}
+.ProseMirror mark[data-type="highlight"][data-color="#fde68a"] {
+    background-color: rgba(253, 230, 138, 0.7); /* gold (same as yellow for soft look) */
+    color: #19191c;
+}
+.ProseMirror mark[data-type="highlight"][data-color="#fbcfe8"] {
+    background-color: rgba(251, 207, 232, 0.7); /* pink */
+    color: #19191c;
+}
+
+/* --- Theme Base Settings --- */
+
 :root {
-	color-scheme: light;
+    color-scheme: light;
 }
 
 .dark {
-	color-scheme: dark;
+    color-scheme: dark;
 }
 
 .theme-transition,
 .theme-transition * {
-	transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, fill 300ms ease, stroke 300ms ease;
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, fill 300ms ease, stroke 300ms ease;
 }

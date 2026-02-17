@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
+import Highlight from '@tiptap/extension-highlight'
 import apiClient from '@/lib/axios'
 import { Share2, Copy, X } from 'lucide-vue-next'
 import SearchOverlay from '@/components/SearchOverlay.vue'
@@ -89,6 +90,7 @@ onMounted(() => {
 const editor = useEditor({
   content: '',
   extensions: [
+    Highlight.configure({ multicolor: true }),
     StarterKit,
     Image,
   ],
@@ -161,6 +163,8 @@ onBeforeUnmount(() => {
             </button>
           </div>
         </div>
+        <!-- Mobile/Tablet Share Button -->
+        <!-- Mobile/Tablet Share Button removed; will be placed in author section -->
 
         <article class="col-span-12 lg:col-span-8 w-full max-w-6xl mx-auto min-h-[60vh] flex flex-col justify-between">
           <div v-if="loading" class="py-16 text-center text-sm text-gray-500 dark:text-slate-400">
@@ -205,6 +209,17 @@ onBeforeUnmount(() => {
               <div>
                 <div class="font-bold text-gray-900 dark:text-white">{{ post?.author ?? 'Author' }}</div>
                 <div class="text-sm text-gray-500 dark:text-slate-400">Author</div>
+              </div>
+              <!-- Share button for tablets and smaller devices, placed at the far right of the author section -->
+              <div class="ml-auto sm:mt-0 flex-shrink-0 lg:hidden">
+                <button
+                  type="button"
+                  class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:text-black hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
+                  @click="openShare"
+                  aria-label="Share"
+                >
+                  <Share2 class="h-5 w-5" />
+                </button>
               </div>
             </div>
 

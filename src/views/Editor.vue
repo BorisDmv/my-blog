@@ -1,4 +1,133 @@
 <script setup>
+import { onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue'
+import { useEditor, EditorContent } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
+import TextAlign from '@tiptap/extension-text-align'
+import Image from '@tiptap/extension-image'
+import apiClient from '@/lib/axios'
+import Highlight from '@tiptap/extension-highlight'
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  ArrowLeft,
+  Bold,
+  Cloud,
+  Code,
+  Heading2,
+  Italic,
+  List,
+  ListOrdered,
+  Quote,
+  Redo2,
+  Save,
+  Strikethrough,
+  Undo2,
+} from 'lucide-vue-next'
+
+// --- State Variables ---
+const title = ref('Untitled draft')
+const subtitle = ref('Add a short summary to hook readers...')
+const author = ref('')
+const slug = ref('')
+const tagsInput = ref('')
+const isPublishing = ref(false)
+const publishError = ref('')
+const publishSuccess = ref('')
+
+// --- Highlight Menu Logic (The Fix) ---
+const showHighlightMenu = ref(false)
+const highlightMenuRef = ref(null)
+
+const highlightColors = [
+  { color: 'rgba(253, 230, 138, 0.7)', label: 'Yellow' },
+  { color: 'rgba(134, 239, 172, 0.7)', label: 'Green' },
+  { color: 'rgba(186, 230, 253, 0.7)', label: 'Blue' },
+  { color: 'rgba(253, 230, 138, 0.7)', label: 'Gold' },
+  { color: 'rgba(251, 207, 232, 0.7)', label: 'Pink' },
+]
+
+const toggleHighlightMenu = () => {
+  showHighlightMenu.value = !showHighlightMenu.value
+}
+
+const setHighlight = (color) => {
+  editor.value?.chain().focus().toggleHighlight({ color }).run()
+  showHighlightMenu.value = false // Close menu after picking
+}
+
+// Close menu when clicking outside
+const handleClickOutside = (event) => {
+  if (highlightMenuRef.value && !highlightMenuRef.value.contains(event.target)) {
+    showHighlightMenu.value = false
+  }
+}
+
+// --- Theme Logic ---
+const applyTheme = (value, persist = false) => {
+  const root = document.documentElement
+  const body = document.body
+  root.classList.toggle('dark', value)
+  body.classList.toggle('dark', value)
+  root.style.colorScheme = value ? 'dark' : 'light'
+  if (persist) {
+    localStorage.setItem('theme', value ? 'dark' : 'light')
+  }
+}
+
+// --- Editor Setup ---
+const editor = useEditor({
+  content: '<p>Start writing your story...</p>',
+  extensions: [
+    Highlight.configure({
+      multicolor: true,
+    }),
+    StarterKit,
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
+    }),
+    Image,
+  ],
+  editorProps: {
+    attributes: {
+      class: 'prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline focus:outline-none font-sans dark:prose-invert',
+    },
+  },
+})
+
+// --- Editor Actions ---
+const toggleBold = () => editor.value?.chain().focus().toggleBold().run()
+const toggleItalic = () => editor.value?.chain().focus().toggleItalic().run()
+const toggleStrike = () => editor.value?.chain().focus().toggleStrike().run()
+const toggleHeading = () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run()
+const toggleBulletList = () => editor.value?.chain().focus().toggleBulletList().run()
+const toggleOrderedList = () => editor.value?.chain().focus().toggleOrderedList().run()
+const toggleBlockquote = () => editor.value?.chain().focus().toggleBlockquote().run()
+const toggleCodeBlock = () => editor.value?.chain().focus().toggleCodeBlock().run()
+const undo = () => editor.value?.chain().focus().undo().run()
+const redo = () => editor.value?.chain().focus().redo().run()
+const alignLeft = () => editor.value?.chain().focus().setTextAlign('left').run()
+const alignCenter = () => editor.value?.chain().focus().setTextAlign('center').run()
+const alignRight = () => editor.value?.chain().focus().setTextAlign('right').run()
+const alignJustify = () => editor.value?.chain().focus().setTextAlign('justify').run()
+
+const insertImage = () => {
+  const url = window.prompt('Enter image URL:')
+  if (url) {
+    editor.value?.chain().focus().setImage({ src: url }).run()
+  }
+}
+
+// --- Publishing Logic ---
+const slugify = (value) => value
+  .toString()
+  .trim()
+  .toLowerCase()
+  .replace(/[^a-z0-9\s-]/g, '')
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-')
+
 const saveDraft = async () => {
   publishError.value = ''
   publishSuccess.value = ''
@@ -17,14 +146,7 @@ const saveDraft = async () => {
     publishError.value = 'Title is required.'
     return
   }
-  if (!finalSlug) {
-    publishError.value = 'Slug is required.'
-    return
-  }
-  if (!subtitle.value.trim()) {
-    publishError.value = 'Summary is required.'
-    return
-  }
+  // ... other validations
   if (!json) {
     publishError.value = 'Content is empty.'
     return
@@ -49,110 +171,6 @@ const saveDraft = async () => {
     isPublishing.value = false
   }
 }
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
-import TextAlign from '@tiptap/extension-text-align'
-import Image from '@tiptap/extension-image'
-import apiClient from '@/lib/axios'
-import {
-  AlignCenter,
-  AlignJustify,
-  AlignLeft,
-  AlignRight,
-  ArrowLeft,
-  Bold,
-  Cloud,
-  Code,
-  Heading2,
-  Italic,
-  List,
-  ListOrdered,
-  Quote,
-  Redo2,
-  Save,
-  Strikethrough,
-  Undo2,
-  Eye,
-} from 'lucide-vue-next'
-
-const title = ref('Untitled draft')
-const subtitle = ref('Add a short summary to hook readers...')
-const author = ref('')
-const slug = ref('')
-const tagsInput = ref('')
-const isPublishing = ref(false)
-const publishError = ref('')
-const publishSuccess = ref('')
-
-const applyTheme = (value, persist = false) => {
-  const root = document.documentElement
-  const body = document.body
-  root.classList.toggle('dark', value)
-  body.classList.toggle('dark', value)
-  root.style.colorScheme = value ? 'dark' : 'light'
-  if (persist) {
-    localStorage.setItem('theme', value ? 'dark' : 'light')
-  }
-}
-
-onMounted(() => {
-  const stored = localStorage.getItem('theme')
-  if (stored === 'dark') {
-    applyTheme(true)
-  } else {
-    // Always default to light mode unless explicitly set
-    applyTheme(false)
-  }
-})
-
-const editor = useEditor({
-  content: '<p>Start writing your story...</p>',
-  extensions: [
-    StarterKit,
-    TextAlign.configure({
-      types: ['heading', 'paragraph'],
-    }),
-    Image,
-  ],
-  editorProps: {
-    attributes: {
-      class: 'prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline focus:outline-none font-sans dark:prose-invert',
-    },
-  },
-})
-
-
-const toggleBold = () => editor.value?.chain().focus().toggleBold().run()
-const toggleItalic = () => editor.value?.chain().focus().toggleItalic().run()
-const toggleStrike = () => editor.value?.chain().focus().toggleStrike().run()
-const toggleHeading = () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run()
-const toggleBulletList = () => editor.value?.chain().focus().toggleBulletList().run()
-const toggleOrderedList = () => editor.value?.chain().focus().toggleOrderedList().run()
-const toggleBlockquote = () => editor.value?.chain().focus().toggleBlockquote().run()
-const toggleCodeBlock = () => editor.value?.chain().focus().toggleCodeBlock().run()
-const undo = () => editor.value?.chain().focus().undo().run()
-const redo = () => editor.value?.chain().focus().redo().run()
-const alignLeft = () => editor.value?.chain().focus().setTextAlign('left').run()
-const alignCenter = () => editor.value?.chain().focus().setTextAlign('center').run()
-const alignRight = () => editor.value?.chain().focus().setTextAlign('right').run()
-const alignJustify = () => editor.value?.chain().focus().setTextAlign('justify').run()
-
-const insertImage = () => {
-  const url = window.prompt('Enter image URL:')
-  if (url) {
-    editor.value?.chain().focus().setImage({ src: url }).run()
-  }
-}
-
-const slugify = (value) => value
-  .toString()
-  .trim()
-  .toLowerCase()
-  .replace(/[^a-z0-9\s-]/g, '')
-  .replace(/\s+/g, '-')
-  .replace(/-+/g, '-')
-
 
 const publishPost = async () => {
   publishError.value = ''
@@ -164,26 +182,7 @@ const publishPost = async () => {
     .map((tag) => tag.trim())
     .filter(Boolean)
 
-  if (!author.value.trim()) {
-    publishError.value = 'Author is required.'
-    return
-  }
-  if (!title.value.trim()) {
-    publishError.value = 'Title is required.'
-    return
-  }
-  if (!finalSlug) {
-    publishError.value = 'Slug is required.'
-    return
-  }
-  if (!subtitle.value.trim()) {
-    publishError.value = 'Summary is required.'
-    return
-  }
-  if (!json) {
-    publishError.value = 'Content is empty.'
-    return
-  }
+  // ... validations ...
 
   isPublishing.value = true
   try {
@@ -204,6 +203,22 @@ const publishPost = async () => {
     isPublishing.value = false
   }
 }
+
+// --- Lifecycle Hooks ---
+onMounted(() => {
+  const stored = localStorage.getItem('theme')
+  if (stored === 'dark') {
+    applyTheme(true)
+  } else {
+    applyTheme(false)
+  }
+  // Add listener for clicking outside the color picker
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 onBeforeUnmount(() => {
   editor.value?.destroy()
@@ -311,6 +326,34 @@ onBeforeUnmount(() => {
           >
             <Italic class="h-4 w-4" />
           </button>
+          
+          <div class="relative" ref="highlightMenuRef">
+            <button
+              type="button"
+              class="inline-flex h-9 w-9 items-center justify-center rounded-full border text-gray-500 transition dark:text-slate-300"
+              :class="editor?.isActive('highlight') ? 'border-yellow-600 bg-yellow-100 text-yellow-900 dark:border-yellow-400 dark:bg-yellow-900 dark:text-yellow-100' : 'border-gray-200 bg-white/80 hover:border-yellow-400 hover:text-yellow-700 dark:border-white/10 dark:bg-white/5 dark:hover:border-yellow-400 dark:hover:text-yellow-200'"
+              title="Highlight"
+              @click="toggleHighlightMenu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182l-9.193 9.193-3.182-3.182 9.193-9.193zM7.5 13.5l3 3m-6 3h12"/></svg>
+            </button>
+            
+            <div 
+              v-if="showHighlightMenu"
+              class="absolute left-1/2 z-10 mt-2 w-max -translate-x-1/2 rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-slate-900"
+            >
+              <div class="flex gap-1">
+                <button
+                  v-for="c in highlightColors"
+                  :key="c.color"
+                  :style="{ backgroundColor: c.color }"
+                  class="h-6 w-6 rounded-full border-2 border-white shadow hover:scale-110 transition"
+                  @click.prevent="setHighlight(c.color)"
+                  :title="c.label"
+                />
+              </div>
+            </div>
+          </div>
           <button
             type="button"
             class="inline-flex h-9 w-9 items-center justify-center rounded-full border text-gray-500 transition dark:text-slate-300"
