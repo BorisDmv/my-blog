@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+:root {
+	color-scheme: light;
+}
+
+.dark {
+	color-scheme: dark;
+}
+
+.theme-transition,
+.theme-transition * {
+	transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, fill 300ms ease, stroke 300ms ease;
+}
