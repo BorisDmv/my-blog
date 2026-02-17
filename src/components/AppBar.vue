@@ -34,7 +34,7 @@ onMounted(() => {
 
 <template>
   <header class="border-b border-gray-200 sticky top-0 bg-white/95 backdrop-blur-sm z-50 dark:border-white/10 dark:bg-slate-950/90">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center">
         <RouterLink to="/home" class="text-2xl font-bold tracking-tight text-black dark:text-slate-100">writtenbyhuman.</RouterLink>
       </div>
