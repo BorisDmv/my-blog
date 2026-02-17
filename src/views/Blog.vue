@@ -19,14 +19,16 @@ const post = ref(null)
 const loading = ref(true)
 const error = ref('')
 
-const applyTheme = (value) => {
+const applyTheme = (value, persist = false) => {
   isDark.value = value
   const root = document.documentElement
   const body = document.body
   root.classList.toggle('dark', value)
   body.classList.toggle('dark', value)
   root.style.colorScheme = value ? 'dark' : 'light'
-  localStorage.setItem('theme', value ? 'dark' : 'light')
+  if (persist) {
+    localStorage.setItem('theme', value ? 'dark' : 'light')
+  }
 }
 
 const toggleTheme = (event) => {
@@ -34,7 +36,7 @@ const toggleTheme = (event) => {
   const root = document.documentElement
   root.classList.add('theme-transition')
   window.setTimeout(() => root.classList.remove('theme-transition'), 320)
-  applyTheme(!isDark.value)
+  applyTheme(!isDark.value, true)
 }
 const openSearch = () => {
   isSearchOpen.value = true
@@ -78,10 +80,9 @@ onMounted(() => {
   const stored = localStorage.getItem('theme')
   if (stored === 'dark') {
     applyTheme(true)
-  } else if (stored === 'light') {
-    applyTheme(false)
   } else {
-    applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches)
+    // Always default to light mode unless explicitly set
+    applyTheme(false)
   }
   fetchPost()
 })

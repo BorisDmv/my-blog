@@ -85,25 +85,25 @@ const isPublishing = ref(false)
 const publishError = ref('')
 const publishSuccess = ref('')
 
-const applyTheme = (value) => {
+const applyTheme = (value, persist = false) => {
   const root = document.documentElement
   const body = document.body
   root.classList.toggle('dark', value)
   body.classList.toggle('dark', value)
   root.style.colorScheme = value ? 'dark' : 'light'
+  if (persist) {
+    localStorage.setItem('theme', value ? 'dark' : 'light')
+  }
 }
 
 onMounted(() => {
   const stored = localStorage.getItem('theme')
   if (stored === 'dark') {
     applyTheme(true)
-    return
-  }
-  if (stored === 'light') {
+  } else {
+    // Always default to light mode unless explicitly set
     applyTheme(false)
-    return
   }
-  applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches)
 })
 
 const editor = useEditor({
