@@ -195,11 +195,13 @@ onBeforeUnmount(() => {
             </header>
 
             <div class="flex items-center gap-4 mb-12 border-t border-b border-gray-100 py-6 dark:border-white/10">
-              <img
-                :src="`https://api.dicebear.com/7.x/bottts/svg?seed=${post?.author ?? 'Author'}`"
-                :alt="post?.author ?? 'Author'"
-                class="w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10"
-              />
+              <span class="w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden">
+                <img
+                  src="@/assets/authorimg.png"
+                  :alt="post?.author ?? 'Author'"
+                  class="w-16 h-16 object-cover"
+                />
+              </span>
               <div>
                 <div class="font-bold text-gray-900 dark:text-white">{{ post?.author ?? 'Author' }}</div>
                 <div class="text-sm text-gray-500 dark:text-slate-400">Author</div>
