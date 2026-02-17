@@ -95,7 +95,7 @@ const editor = useEditor({
   editable: false,
   editorProps: {
     attributes: {
-      class: 'prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline focus:outline-none font-serif dark:prose-invert',
+      class: 'prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline focus:outline-none font-sans dark:prose-invert',
     },
   },
 })

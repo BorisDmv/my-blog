@@ -117,7 +117,7 @@ const editor = useEditor({
   ],
   editorProps: {
     attributes: {
-      class: 'prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline focus:outline-none font-serif dark:prose-invert',
+      class: 'prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline focus:outline-none font-sans dark:prose-invert',
     },
   },
 })
@@ -244,12 +244,8 @@ onBeforeUnmount(() => {
     </header>
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-gray-400 dark:text-slate-500">
-        <span>Draft</span>
-        <span class="flex items-center gap-2">
-          <Eye class="h-4 w-4" />
-          Preview
-        </span>
+      <div class="text-xs uppercase tracking-[0.3em] text-gray-400 dark:text-slate-500 mb-2">
+        Editor
       </div>
 
       <div class="mt-8 space-y-6">
@@ -279,10 +275,10 @@ onBeforeUnmount(() => {
           class="w-full border-0 bg-transparent text-4xl font-semibold text-gray-900 placeholder:text-gray-300 focus:outline-none dark:text-white dark:placeholder:text-slate-600"
           placeholder="Blog title"
         />
-        <input
+        <textarea
           v-model="subtitle"
-          type="text"
-          class="w-full border-0 bg-transparent text-lg text-gray-500 placeholder:text-gray-300 focus:outline-none dark:text-slate-300 dark:placeholder:text-slate-600"
+          rows="2"
+          class="w-full border-0 bg-transparent text-lg text-gray-500 placeholder:text-gray-300 focus:outline-none dark:text-slate-300 dark:placeholder:text-slate-600 resize-none overflow-auto"
           placeholder="Subtitle or short description"
         />
         <div v-if="publishError" class="text-sm text-red-500">{{ publishError }}</div>
