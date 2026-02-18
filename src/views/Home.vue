@@ -146,6 +146,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <div class="home-wrapper">
   <div
     class="min-h-screen bg-white text-gray-900 dark:bg-slate-950 dark:text-slate-100"
     :class="{ dark: isDark }"
@@ -188,13 +189,13 @@ onBeforeUnmount(() => {
           >
             <div class="flex-1 flex flex-col justify-between">
               <div>
-                <!-- Removed 'Post' label for cleaner card header -->
-                  <h2 class="mt-4 text-2xl font-semibold text-gray-900 transition group-hover:text-gray-700 dark:text-white dark:group-hover:text-slate-100">
-                    {{ post.title }}
-                  </h2>
-                  <p v-if="post.summary" class="mt-2 text-base text-gray-500 dark:text-slate-400">
-                    {{ post.summary }}
-                  </p>
+                <h2 class="mt-4 text-2xl font-semibold text-gray-900 transition group-hover:text-gray-700 dark:text-white dark:group-hover:text-slate-100">
+                  {{ post.title }}
+                </h2>
+
+                <p v-if="post.summary" class="mt-2 text-base text-gray-500 dark:text-slate-400 line-clamp-4">
+                  {{ post.summary }}
+                </p>
               </div>
                 <!-- Month circle removed -->
             </div>
@@ -223,4 +224,5 @@ onBeforeUnmount(() => {
     </div>
   </div>
   <SearchOverlay v-model="isSearchOpen" />
+  </div>
 </template>

@@ -2,7 +2,7 @@
   <div class="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
     <div class="w-full max-w-md p-8 rounded-3xl shadow-xl border border-gray-200 bg-white dark:bg-slate-900 dark:border-white/10">
       <div class="mb-8 text-center">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Sign in to boris.blog</h1>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Sign in</h1>
         <p class="mt-2 text-gray-500 dark:text-slate-400">Welcome back! Please enter your credentials.</p>
       </div>
       <form @submit.prevent="onLogin">

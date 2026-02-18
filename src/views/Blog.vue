@@ -141,6 +141,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <div class="page-wrapper">
   <div
     class="min-h-screen bg-white text-gray-900 font-sans dark:bg-slate-950 dark:text-slate-100"
     :class="{ dark: isDark }"
@@ -299,6 +300,7 @@ onBeforeUnmount(() => {
       </transition>
     </div>
   </transition>
+  </div>
 </template>
 
 <style>

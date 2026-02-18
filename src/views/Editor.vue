@@ -230,7 +230,7 @@ onBeforeUnmount(() => {
     <header class="border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/90">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-slate-400">
-          <RouterLink to="/home" class="flex items-center gap-2 text-gray-500 hover:text-black dark:text-slate-400 dark:hover:text-white">
+          <RouterLink to="/" class="flex items-center gap-2 text-gray-500 hover:text-black dark:text-slate-400 dark:hover:text-white">
             <ArrowLeft class="h-4 w-4" />
             Back to blog
           </RouterLink>
