@@ -5,7 +5,9 @@ import { RouterView } from 'vue-router'
 <template>
   <router-view v-slot="{ Component, route }">
     <transition name="page-fade-slide" mode="out-in">
-      <component :is="Component" :key="route.fullPath" />
+      <keep-alive include="Home,Blog">
+        <component :is="Component" :key="route.name" />
+      </keep-alive>
     </transition>
   </router-view>
 </template>

@@ -1,4 +1,5 @@
 <script setup>
+defineOptions({ name: 'Home' })
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import apiClient from '@/lib/axios'

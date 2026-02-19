@@ -1,4 +1,5 @@
 <script setup>
+defineOptions({ name: 'Blog' })
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
