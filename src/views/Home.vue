@@ -100,18 +100,11 @@ const nextPage = () => {
   }
 }
 
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    fetchPosts(currentPage.value - 1)
-  }
-}
-
 onMounted(() => {
   const stored = localStorage.getItem('theme')
   if (stored === 'dark') {
     applyTheme(true)
   } else {
-    // Always default to light mode unless explicitly set
     applyTheme(false)
   }
   fetchPosts(1)
@@ -148,82 +141,132 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="home-wrapper">
-  <div
-    class="min-h-screen bg-white text-gray-900 dark:bg-slate-950 dark:text-slate-100"
-    :class="{ dark: isDark }"
-  >
-    <AppBar :is-dark="isDark" @toggle-theme="toggleTheme" @open-search="openSearch" />
+    <div
+      class="min-h-screen bg-white text-gray-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300"
+      :class="{ dark: isDark }"
+    >
+      <AppBar :is-dark="isDark" @toggle-theme="toggleTheme" @open-search="openSearch" />
 
-    <div class="border-b border-gray-200/70 dark:border-white/10">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
-        <div class="flex flex-col gap-5">
-          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-            01 // The Logbook
-          </h1>
-          <p class="max-w-2xl text-base md:text-lg text-gray-500 dark:text-slate-400">
-            Observations on the craft of living and the art of building. No fluff, just the essentials.
-          </p>
+      <div class="border-b border-gray-200/70 dark:border-white/10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
+          <div class="flex flex-col gap-5">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+              01 // The Logbook
+            </h1>
+            <p class="max-w-2xl text-base md:text-lg text-gray-500 dark:text-slate-400">
+              Observations on the craft of living and the art of building. No fluff, just the essentials.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-      <div v-if="loading" class="py-16 text-center text-gray-500 dark:text-slate-400">
-        Loading posts...
-      </div>
-
-      <div v-else-if="error" class="py-16 text-center text-red-500">
-        {{ error }}
-      </div>
-
-      <div v-else>
-        <div v-if="posts.length === 0" class="py-16 text-center text-gray-500 dark:text-slate-400">
-          No posts yet.
-        </div>
-
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <article
-            v-for="post in posts"
-            :key="post.id"
-            class="group cursor-pointer rounded-3xl border border-gray-200/70 bg-white/90 p-6 shadow-sm transition hover:border-gray-300 hover:bg-white hover:shadow-lg dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20 dark:hover:bg-white/10 flex flex-col justify-between min-h-[260px]"
-            @click="goToPost(post.slug)"
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div v-if="loading && posts.length === 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          <div 
+            v-for="i in 6" 
+            :key="i"
+            class="rounded-3xl border border-gray-100 bg-gray-50/50 p-6 dark:border-white/5 dark:bg-white/5 min-h-[260px] flex flex-col justify-between animate-pulse"
           >
-            <div class="flex-1 flex flex-col justify-between">
-              <div>
-                <h2 class="mt-4 text-2xl font-semibold text-gray-900 transition group-hover:text-gray-700 dark:text-white dark:group-hover:text-slate-100">
-                  {{ post.title }}
-                </h2>
-
-                <p v-if="post.summary" class="mt-2 text-base text-gray-500 dark:text-slate-400 line-clamp-4">
-                  {{ post.summary }}
-                </p>
+            <div class="flex-1">
+              <div class="h-8 bg-gray-200 dark:bg-slate-800 rounded-lg w-3/4 mb-4"></div>
+              <div class="space-y-3">
+                <div class="h-4 bg-gray-200 dark:bg-slate-800 rounded w-full"></div>
+                <div class="h-4 bg-gray-200 dark:bg-slate-800 rounded w-full"></div>
+                <div class="h-4 bg-gray-200 dark:bg-slate-800 rounded w-2/3"></div>
               </div>
-                <!-- Month circle removed -->
             </div>
-            <div class="mt-6 flex items-center justify-between text-sm text-gray-500 dark:text-slate-400">
-              <time>
-                {{ formatDate(post.created_at) }}
-              </time>
-              <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-slate-500">Read</span>
+            <div class="mt-6 flex items-center justify-between">
+              <div class="h-4 bg-gray-200 dark:bg-slate-800 rounded w-24"></div>
+              <div class="h-3 bg-gray-200 dark:bg-slate-800 rounded w-12"></div>
             </div>
-          </article>
-        </div>
-
-        <div class="mt-12 flex items-center justify-center">
-          <div
-            ref="loadMoreTrigger"
-            class="flex items-center gap-3 rounded-full border border-gray-200/70 bg-white/80 px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
-          >
-            <span v-if="isLoadingMore">Loading more...</span>
-            <span v-else-if="hasMore">Scroll for more</span>
-            <span v-else>End of list</span>
           </div>
         </div>
 
-        <!-- Removed page indicator and navigation buttons -->
+        <div v-else-if="error" class="py-16 text-center">
+          <p class="text-red-500 font-medium">{{ error }}</p>
+          <button @click="fetchPosts(1)" class="mt-4 text-sm underline text-gray-500">Try again</button>
+        </div>
+
+        <div v-else>
+          <div v-if="posts.length === 0" class="py-16 text-center text-gray-500 dark:text-slate-400">
+            No posts yet.
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <article
+              v-for="post in posts"
+              :key="post.id"
+              class="group cursor-pointer rounded-3xl border border-gray-200/70 bg-white/90 p-6 shadow-sm transition-all duration-300 hover:border-gray-300 hover:shadow-xl hover:-translate-y-1 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20 dark:hover:bg-white/10 flex flex-col justify-between min-h-[260px]"
+              @click="goToPost(post.slug)"
+            >
+              <div class="flex-1 flex flex-col">
+                <h2 class="mt-4 text-2xl font-semibold text-gray-900 transition group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                  {{ post.title }}
+                </h2>
+                <p v-if="post.summary" class="mt-3 text-base text-gray-500 dark:text-slate-400 line-clamp-3">
+                  {{ post.summary }}
+                </p>
+              </div>
+              
+              <div class="mt-6 flex items-center justify-between text-sm text-gray-500 dark:text-slate-400">
+                <time class="font-medium">
+                  {{ formatDate(post.created_at) }}
+                </time>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-slate-500">Read Post</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </article>
+
+            <template v-if="isLoadingMore">
+              <div 
+                v-for="i in 2" 
+                :key="'more-'+i"
+                class="rounded-3xl border border-gray-100 bg-gray-50/50 p-6 dark:border-white/5 dark:bg-white/5 min-h-[260px] flex flex-col justify-between animate-pulse"
+              >
+                <div class="flex-1">
+                  <div class="h-8 bg-gray-200 dark:bg-slate-800 rounded-lg w-3/4 mb-4"></div>
+                  <div class="h-4 bg-gray-200 dark:bg-slate-800 rounded w-full mb-3"></div>
+                  <div class="h-4 bg-gray-200 dark:bg-slate-800 rounded w-2/3"></div>
+                </div>
+                <div class="h-4 bg-gray-200 dark:bg-slate-800 rounded w-24"></div>
+              </div>
+            </template>
+          </div>
+
+          <div class="mt-16 flex items-center justify-center">
+            <div
+              ref="loadMoreTrigger"
+              class="flex items-center gap-3 rounded-full border border-gray-200/70 bg-white/80 px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] text-gray-400 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+            >
+              <div v-if="isLoadingMore" class="flex items-center gap-2">
+                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              </div>
+              <span v-else-if="hasMore">Scroll for more</span>
+              <span v-else>End of list</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <SearchOverlay v-model="isSearchOpen" />
+    <SearchOverlay v-model="isSearchOpen" />
   </div>
 </template>
+
+<style scoped>
+.theme-transition * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>

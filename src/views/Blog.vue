@@ -86,15 +86,14 @@ onMounted(() => {
   if (stored === 'dark') {
     applyTheme(true)
   } else {
-    // Always default to light mode unless explicitly set
     applyTheme(false)
   }
   fetchPost()
-  // Delay scroll to top until after transition for smoother effect
   setTimeout(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, 350)
 })
+
 const editor = useEditor({
   content: '',
   extensions: [
@@ -110,7 +109,6 @@ const editor = useEditor({
   },
 })
 
-
 const fetchPost = async () => {
   const slug = route.params.slug
   if (!slug) {
@@ -118,7 +116,7 @@ const fetchPost = async () => {
     loading.value = false
     return
   }
-  // Try cache first
+  
   const cached = blogCache.getPost(slug)
   if (cached) {
     post.value = cached
@@ -128,6 +126,7 @@ const fetchPost = async () => {
     loading.value = false
     return
   }
+  
   loading.value = true
   error.value = ''
   try {
@@ -138,8 +137,14 @@ const fetchPost = async () => {
       editor.value.commands.setContent(post.value?.content ?? '')
     }
   } catch (err) {
-    error.value = 'Failed to load post.'
-    console.error('Failed to load post:', err)
+    if (err?.response?.status === 404) {
+      window.location.replace('/404')
+      return
+    }
+    if (typeof window !== 'undefined' && window.location) {
+      window.location.replace('/blog-error')
+    }
+    return
   } finally {
     loading.value = false
   }
@@ -150,7 +155,6 @@ watch(
   (newSlug, oldSlug) => {
     if (newSlug && newSlug !== oldSlug) {
       fetchPost()
-      // Delay scroll to top until after transition for smoother effect
       setTimeout(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
       }, 350)
@@ -158,7 +162,6 @@ watch(
   },
 )
 
-// Cleanup editor instance
 onBeforeUnmount(() => {
   editor.value?.destroy()
 })
@@ -166,185 +169,169 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="page-wrapper">
-  <div
-    class="min-h-screen bg-white text-gray-900 font-sans dark:bg-slate-950 dark:text-slate-100"
-    :class="{ dark: isDark }"
-  >
-    
-    <AppBar :is-dark="isDark" @toggle-theme="toggleTheme" @open-search="openSearch" />
-
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-        
-        <div class="hidden lg:block lg:col-span-2">
-          <div class="sticky top-24 flex flex-col gap-6 items-end pr-4">
-            <span class="text-xs font-bold text-gray-300 uppercase tracking-widest writing-vertical dark:text-slate-500">Share</span>
-            <button
-              type="button"
-              class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:text-black hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
-              @click="openShare"
-            >
-              <Share2 class="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-        <!-- Mobile/Tablet Share Button -->
-        <!-- Mobile/Tablet Share Button removed; will be placed in author section -->
-
-        <article class="col-span-12 lg:col-span-8 w-full max-w-6xl mx-auto min-h-[60vh] flex flex-col justify-between">
-          <div v-if="loading" class="py-16 text-center text-sm text-gray-500 dark:text-slate-400">
-            Loading post...
-          </div>
-          <div v-else-if="error" class="py-16 text-center text-sm text-red-500">
-            {{ error }}
-          </div>
-          <div v-else>
-            <header class="mb-10 text-center lg:text-left">
-              <time
-                v-if="post?.created_at"
-                class="text-xs font-bold text-gray-400 tracking-widest uppercase mb-4 block dark:text-slate-400"
-              >
-                {{ formatDate(post.created_at) }}
-              </time>
-              <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-6 leading-tight dark:text-slate-100">
-                {{ post?.title ?? 'Untitled post' }}
-              </h1>
-              <p v-if="post?.summary" class="text-xl text-gray-600 leading-relaxed dark:text-slate-300">
-                {{ post.summary }}
-              </p>
-              <div v-if="post?.tags?.length" class="mt-5 flex flex-wrap items-center gap-2 justify-center lg:justify-start">
-                <span
-                  v-for="tag in post.tags"
-                  :key="tag"
-                  class="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-white/10 dark:text-slate-400"
-                >
-                  {{ tag }}
-                </span>
-              </div>
-            </header>
-
-            <div class="flex items-center gap-4 mb-12 border-t border-b border-gray-100 py-6 dark:border-white/10">
-              <span class="w-15 h-15 flex items-center justify-center overflow-hidden">
-                <img
-                  src="@/assets/authorimage.png"
-                  :alt="post?.author ?? 'Author'"
-                  class="w-15 h-15 rounded-full object-cover border-2 border-transparent"
-                  style="background: none;"
-                />
-              </span>
-              <div>
-                <div class="font-bold text-gray-900 dark:text-white">{{ post?.author ?? 'Author' }}</div>
-                <div class="text-sm text-gray-500 dark:text-slate-400">Author</div>
-              </div>
-              <!-- Share button for tablets and smaller devices, placed at the far right of the author section -->
-              <div class="ml-auto sm:mt-0 flex-shrink-0 lg:hidden">
-                <button
-                  type="button"
-                  class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:text-black hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
-                  @click="openShare"
-                  aria-label="Share"
-                >
-                  <Share2 class="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            <div class="blog-content">
-              <editor-content :editor="editor" />
-            </div>
-          </div>
-        </article>
-
-        <div class="hidden lg:block lg:col-span-2"></div>
-      </div>
-    </main>
-
-  </div>
-  <SearchOverlay v-model="isSearchOpen" />
-  <transition
-    enter-active-class="transition duration-300 ease-out"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition duration-200 ease-in"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
     <div
-      v-if="isShareOpen"
-      class="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      @click.self="closeShare"
+      class="min-h-screen bg-white text-gray-900 font-sans dark:bg-slate-950 dark:text-slate-100"
+      :class="{ dark: isDark }"
     >
-      <transition
-        enter-active-class="transition duration-300 ease-out"
-        enter-from-class="opacity-0 scale-95 translate-y-2"
-        enter-to-class="opacity-100 scale-100 translate-y-0"
-        leave-active-class="transition duration-200 ease-in"
-        leave-from-class="opacity-100 scale-100 translate-y-0"
-        leave-to-class="opacity-0 scale-95 translate-y-2"
-      >
-        <div
-          v-if="isShareOpen"
-          class="w-[min(92vw,560px)] rounded-3xl bg-white p-8 shadow-2xl ring-1 ring-black/5 dark:bg-slate-950 dark:ring-white/10"
-        >
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400 dark:text-slate-500">Share this story</p>
-              <h2 class="mt-3 text-2xl font-semibold text-gray-900 dark:text-white">Go send it to your friends</h2>
-              <p class="mt-2 text-sm text-gray-500 dark:text-slate-400">Copy the link below and share it anywhere.</p>
-            </div>
-            <button
-              type="button"
-              class="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition hover:border-gray-300 hover:text-black dark:border-white/10 dark:text-slate-400 dark:hover:border-white/20 dark:hover:text-white"
-              @click="closeShare"
-            >
-              <X class="h-4 w-4" />
-            </button>
-          </div>
+      <AppBar :is-dark="isDark" @toggle-theme="toggleTheme" @open-search="openSearch" />
 
-          <div class="mt-6 rounded-2xl border border-gray-100 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-slate-500">Share link</p>
-            <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <input
-                type="text"
-                readonly
-                :value="shareUrl"
-                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm focus:outline-none dark:border-white/10 dark:bg-slate-950 dark:text-slate-200"
-              />
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+          
+          <div class="hidden lg:block lg:col-span-2">
+            <div class="sticky top-24 flex flex-col gap-6 items-end pr-4">
+              <span class="text-xs font-bold text-gray-300 uppercase tracking-widest writing-vertical dark:text-slate-500">Share</span>
               <button
                 type="button"
-                class="inline-flex items-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-900 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
-                @click="copyShareUrl"
+                class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:text-black hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
+                @click="openShare"
               >
-                <Copy class="h-4 w-4" />
-                {{ isCopied ? 'Copied' : 'Copy' }}
+                <Share2 class="h-5 w-5" />
               </button>
             </div>
           </div>
+
+          <article class="col-span-12 lg:col-span-8 w-full max-w-6xl mx-auto min-h-[60vh]">
+            
+            <div v-if="loading" class="animate-pulse">
+              <header class="mb-10 text-center lg:text-left">
+                <div class="h-4 w-32 bg-gray-200 dark:bg-slate-800 rounded mb-4 mx-auto lg:mx-0"></div>
+                <div class="h-10 w-full bg-gray-200 dark:bg-slate-800 rounded mb-4"></div>
+                <div class="h-10 w-2/3 bg-gray-200 dark:bg-slate-800 rounded mb-6 mx-auto lg:mx-0"></div>
+                <div class="space-y-2 mb-6">
+                  <div class="h-5 w-full bg-gray-100 dark:bg-slate-900 rounded"></div>
+                  <div class="h-5 w-5/6 bg-gray-100 dark:bg-slate-900 rounded mx-auto lg:mx-0"></div>
+                </div>
+                <div class="flex gap-2 justify-center lg:justify-start">
+                  <div class="h-6 w-16 bg-gray-200 dark:bg-slate-800 rounded-full"></div>
+                  <div class="h-6 w-16 bg-gray-200 dark:bg-slate-800 rounded-full"></div>
+                </div>
+              </header>
+
+              <div class="flex items-center gap-4 mb-12 border-t border-b border-gray-100 py-6 dark:border-white/10">
+                <div class="w-15 h-15 rounded-full bg-gray-200 dark:bg-slate-800"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-4 w-24 bg-gray-200 dark:bg-slate-800 rounded"></div>
+                  <div class="h-3 w-16 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div class="h-4 w-full bg-gray-100 dark:bg-slate-900 rounded"></div>
+                <div class="h-4 w-full bg-gray-100 dark:bg-slate-900 rounded"></div>
+                <div class="h-4 w-3/4 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                <div class="h-32 w-full bg-gray-200 dark:bg-slate-800 rounded-xl my-8"></div>
+                <div class="h-4 w-full bg-gray-100 dark:bg-slate-900 rounded"></div>
+                <div class="h-4 w-5/6 bg-gray-100 dark:bg-slate-900 rounded"></div>
+              </div>
+            </div>
+
+            <div v-else-if="error" class="py-16 text-center text-sm text-red-500">
+              {{ error }}
+            </div>
+
+            <div v-else>
+              <header class="mb-10 text-center lg:text-left">
+                <time
+                  v-if="post?.created_at"
+                  class="text-xs font-bold text-gray-400 tracking-widest uppercase mb-4 block dark:text-slate-400"
+                >
+                  {{ formatDate(post.created_at) }}
+                </time>
+                <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-6 leading-tight dark:text-slate-100">
+                  {{ post?.title ?? 'Untitled post' }}
+                </h1>
+                <p v-if="post?.summary" class="text-xl text-gray-600 leading-relaxed dark:text-slate-300">
+                  {{ post.summary }}
+                </p>
+                <div v-if="post?.tags?.length" class="mt-5 flex flex-wrap items-center gap-2 justify-center lg:justify-start">
+                  <span
+                    v-for="tag in post.tags"
+                    :key="tag"
+                    class="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-white/10 dark:text-slate-400"
+                  >
+                    {{ tag }}
+                  </span>
+                </div>
+              </header>
+
+              <div class="flex items-center gap-4 mb-12 border-t border-b border-gray-100 py-6 dark:border-white/10">
+                <span class="w-15 h-15 flex items-center justify-center overflow-hidden">
+                  <img
+                    src="@/assets/authorimage.png"
+                    :alt="post?.author ?? 'Author'"
+                    class="w-15 h-15 rounded-full object-cover border-2 border-transparent"
+                    style="background: none;"
+                  />
+                </span>
+                <div>
+                  <div class="font-bold text-gray-900 dark:text-white">{{ post?.author ?? 'Author' }}</div>
+                  <div class="text-sm text-gray-500 dark:text-slate-400">Author</div>
+                </div>
+                <div class="ml-auto sm:mt-0 flex-shrink-0 lg:hidden">
+                  <button
+                    type="button"
+                    class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:text-black hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
+                    @click="openShare"
+                  >
+                    <Share2 class="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="blog-content">
+                <editor-content :editor="editor" />
+              </div>
+            </div>
+          </article>
+
+          <div class="hidden lg:block lg:col-span-2"></div>
+        </div>
+      </main>
+
+      <SearchOverlay v-model="isSearchOpen" />
+      <transition name="fade">
+        <div v-if="isShareOpen" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="closeShare">
+           <div class="w-[min(92vw,560px)] rounded-3xl bg-white p-8 shadow-2xl ring-1 ring-black/5 dark:bg-slate-950 dark:ring-white/10">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400 dark:text-slate-500">Share this story</p>
+                  <h2 class="mt-3 text-2xl font-semibold text-gray-900 dark:text-white">Go send it to your friends</h2>
+                </div>
+                <button @click="closeShare" class="h-9 w-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-white/10"><X class="h-4 w-4" /></button>
+              </div>
+              <div class="mt-6 rounded-2xl border border-gray-100 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/5">
+                <div class="mt-3 flex flex-col sm:flex-row items-stretch gap-3">
+                  <input type="text" readonly :value="shareUrl" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm dark:bg-slate-950 dark:border-white/10" />
+                  <button @click="copyShareUrl" class="inline-flex items-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white dark:bg-white dark:text-slate-950">
+                    <Copy class="h-4 w-4" /> {{ isCopied ? 'Copied' : 'Copy' }}
+                  </button>
+                </div>
+              </div>
+           </div>
         </div>
       </transition>
     </div>
-  </transition>
   </div>
 </template>
 
 <style>
-/* Custom CSS for the "Drop Cap" effect on the first letter of the content */
 .blog-content .ProseMirror > p:first-of-type::first-letter {
   float: left;
   font-size: 5rem;
   line-height: 0.8;
   font-weight: bold;
   margin-right: 0.75rem;
-  margin-top: -0.25rem; /* Optical adjustment */
-  color: #111827; /* gray-900 */
+  margin-top: -0.25rem;
+  color: #111827;
 }
 
 .dark .blog-content .ProseMirror > p:first-of-type::first-letter {
-  color: #f8fafc; /* slate-50 */
+  color: #f8fafc;
 }
 
-/* Ensure the editor takes full width and has no border focus */
-.ProseMirror {
-  outline: none;
-}
+.ProseMirror { outline: none; }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

@@ -31,6 +31,11 @@ const router = createRouter({
       name: 'NotFound',
       component: () => import('@/views/NotFound.vue'),
     },
+    {
+      path: '/blog-error',
+      name: 'BlogError',
+      component: () => import('@/views/BlogError.vue'),
+    },
   ],
 })
 
