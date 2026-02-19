@@ -1,6 +1,6 @@
 <script setup>
 defineOptions({ name: 'Blog' })
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, onActivated, ref, watch } from 'vue'
 import { useThemeStore } from '@/stores/themeStore.js'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -63,6 +63,7 @@ const formatDate = (value) => {
   })
 }
 
+
 onMounted(() => {
   shareUrl.value = window.location.href
   themeStore.initTheme()
@@ -70,6 +71,11 @@ onMounted(() => {
   setTimeout(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, 350)
+})
+
+onActivated(() => {
+  console.debug('[Blog] onActivated triggered')
+  fetchPost()
 })
 
 const editor = useEditor({
@@ -89,32 +95,42 @@ const editor = useEditor({
 
 const fetchPost = async () => {
   const slug = route.params.slug
+  // Debug: log slug and route
+  console.debug('[Blog] fetchPost called. route.params:', route.params)
+  // Clear previous post and error before loading new one
+  post.value = null
+  error.value = ''
   if (!slug) {
     error.value = 'Missing post slug.'
     loading.value = false
+    console.debug('[Blog] No slug found in route.params')
     return
   }
-  
+
   const cached = blogCache.getPost(slug)
+  console.debug('[Blog] Checking cache for slug:', slug, 'Found:', !!cached)
   if (cached) {
     post.value = cached
     if (editor.value) {
       editor.value.commands.setContent(post.value?.content ?? '')
     }
     loading.value = false
+    console.debug('[Blog] Loaded post from cache:', post.value)
     return
   }
-  
+
   loading.value = true
-  error.value = ''
   try {
+    console.debug('[Blog] Fetching post from API for slug:', slug)
     const response = await apiClient.get(`/api/post/${slug}`)
     post.value = response.data ?? null
     blogCache.setPost(slug, post.value)
     if (editor.value) {
       editor.value.commands.setContent(post.value?.content ?? '')
     }
+    console.debug('[Blog] Loaded post from API:', post.value)
   } catch (err) {
+    console.error('[Blog] Error loading post:', err)
     if (err?.response?.status === 404) {
       window.location.replace('/404')
       return
@@ -125,12 +141,14 @@ const fetchPost = async () => {
     return
   } finally {
     loading.value = false
+    console.debug('[Blog] fetchPost finished. loading:', loading.value, 'post:', post.value)
   }
 }
 
 watch(
   () => route.params.slug,
   (newSlug, oldSlug) => {
+    console.debug('[Blog] Slug watcher triggered. newSlug:', newSlug, 'oldSlug:', oldSlug)
     if (newSlug && newSlug !== oldSlug) {
       fetchPost()
       setTimeout(() => {
