@@ -90,6 +90,8 @@ onMounted(() => {
     applyTheme(false)
   }
   fetchPost()
+  // Scroll to top when entering the blog page
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
 })
 const editor = useEditor({
   content: '',
@@ -146,6 +148,8 @@ watch(
   (newSlug, oldSlug) => {
     if (newSlug && newSlug !== oldSlug) {
       fetchPost()
+      // Scroll to top when navigating to a new blog post
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
     }
   },
 )
