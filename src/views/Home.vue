@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import apiClient from '@/lib/axios'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import AppBar from '@/components/AppBar.vue'
+import { useThemeStore } from '@/stores/themeStore.js'
 
 const router = useRouter()
 const posts = ref([])
@@ -18,7 +19,7 @@ const hasMore = ref(true)
 const loadMoreTrigger = ref(null)
 let observer = null
 const isSearchOpen = ref(false)
-const isDark = ref(false)
+const themeStore = useThemeStore()
 
 const formatDate = (value) => {
   if (!value) return ''
@@ -31,25 +32,7 @@ const formatDate = (value) => {
   })
 }
 
-const applyTheme = (value, persist = false) => {
-  isDark.value = value
-  const root = document.documentElement
-  const body = document.body
-  root.classList.toggle('dark', value)
-  body.classList.toggle('dark', value)
-  root.style.colorScheme = value ? 'dark' : 'light'
-  if (persist) {
-    localStorage.setItem('theme', value ? 'dark' : 'light')
-  }
-}
-
-const toggleTheme = (event) => {
-  if (event?.preventDefault) event.preventDefault()
-  const root = document.documentElement
-  root.classList.add('theme-transition')
-  window.setTimeout(() => root.classList.remove('theme-transition'), 320)
-  applyTheme(!isDark.value, true)
-}
+// ...existing code...
 
 const openSearch = () => {
   isSearchOpen.value = true
@@ -101,12 +84,7 @@ const nextPage = () => {
 }
 
 onMounted(() => {
-  const stored = localStorage.getItem('theme')
-  if (stored === 'dark') {
-    applyTheme(true)
-  } else {
-    applyTheme(false)
-  }
+  themeStore.initTheme()
   fetchPosts(1)
   observer = new IntersectionObserver(
     (entries) => {
@@ -143,9 +121,9 @@ onBeforeUnmount(() => {
   <div class="home-wrapper">
     <div
       class="min-h-screen bg-white text-gray-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300"
-      :class="{ dark: isDark }"
+      :class="{ dark: themeStore.isDark }"
     >
-      <AppBar :is-dark="isDark" @toggle-theme="toggleTheme" @open-search="openSearch" />
+      <AppBar :is-dark="themeStore.isDark" @toggle-theme="themeStore.toggleTheme" @open-search="openSearch" />
 
       <div class="border-b border-gray-200/70 dark:border-white/10">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">

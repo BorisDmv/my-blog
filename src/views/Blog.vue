@@ -1,6 +1,7 @@
 <script setup>
 defineOptions({ name: 'Blog' })
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useThemeStore } from '@/stores/themeStore.js'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useBlogCacheStore } from '@/stores/blogCache'
@@ -18,31 +19,13 @@ const isSearchOpen = ref(false)
 const isShareOpen = ref(false)
 const isCopied = ref(false)
 const shareUrl = ref('')
-const isDark = ref(false)
+const themeStore = useThemeStore()
 const post = ref(null)
 const blogCache = useBlogCacheStore()
 const loading = ref(true)
 const error = ref('')
 
-const applyTheme = (value, persist = false) => {
-  isDark.value = value
-  const root = document.documentElement
-  const body = document.body
-  root.classList.toggle('dark', value)
-  body.classList.toggle('dark', value)
-  root.style.colorScheme = value ? 'dark' : 'light'
-  if (persist) {
-    localStorage.setItem('theme', value ? 'dark' : 'light')
-  }
-}
-
-const toggleTheme = (event) => {
-  if (event?.preventDefault) event.preventDefault()
-  const root = document.documentElement
-  root.classList.add('theme-transition')
-  window.setTimeout(() => root.classList.remove('theme-transition'), 320)
-  applyTheme(!isDark.value, true)
-}
+// ...existing code...
 const openSearch = () => {
   isSearchOpen.value = true
 }
@@ -82,12 +65,7 @@ const formatDate = (value) => {
 
 onMounted(() => {
   shareUrl.value = window.location.href
-  const stored = localStorage.getItem('theme')
-  if (stored === 'dark') {
-    applyTheme(true)
-  } else {
-    applyTheme(false)
-  }
+  themeStore.initTheme()
   fetchPost()
   setTimeout(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -171,9 +149,9 @@ onBeforeUnmount(() => {
   <div class="page-wrapper">
     <div
       class="min-h-screen bg-white text-gray-900 font-sans dark:bg-slate-950 dark:text-slate-100"
-      :class="{ dark: isDark }"
+      :class="{ dark: themeStore.isDark }"
     >
-      <AppBar :is-dark="isDark" @toggle-theme="toggleTheme" @open-search="openSearch" />
+      <AppBar :is-dark="themeStore.isDark" @toggle-theme="themeStore.toggleTheme" @open-search="openSearch" />
 
       <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="lg:grid lg:grid-cols-12 lg:gap-8">
