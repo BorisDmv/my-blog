@@ -90,8 +90,10 @@ onMounted(() => {
     applyTheme(false)
   }
   fetchPost()
-  // Scroll to top when entering the blog page
-  window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  // Delay scroll to top until after transition for smoother effect
+  setTimeout(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, 350)
 })
 const editor = useEditor({
   content: '',
@@ -148,8 +150,10 @@ watch(
   (newSlug, oldSlug) => {
     if (newSlug && newSlug !== oldSlug) {
       fetchPost()
-      // Scroll to top when navigating to a new blog post
-      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      // Delay scroll to top until after transition for smoother effect
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      }, 350)
     }
   },
 )
