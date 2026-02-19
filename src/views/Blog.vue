@@ -295,7 +295,7 @@ onBeforeUnmount(() => {
 
           <div class="mt-6 rounded-2xl border border-gray-100 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/5">
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-slate-500">Share link</p>
-            <div class="mt-3 flex items-center gap-3">
+            <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <input
                 type="text"
                 readonly
