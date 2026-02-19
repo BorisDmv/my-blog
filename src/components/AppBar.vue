@@ -44,9 +44,12 @@ onMounted(() => {
           <RouterLink
             v-if="isAuthenticated"
             to="/editor"
-            class="hover:text-black transition-colors dark:hover:text-white"
+            class="flex items-center justify-center w-10 h-10 rounded-full bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 shadow transition"
+            title="Add your story"
           >
-            Add your story
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
           </RouterLink>
         </nav>
 
