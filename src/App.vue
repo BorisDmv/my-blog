@@ -6,7 +6,7 @@ import { RouterView } from 'vue-router'
   <router-view v-slot="{ Component, route }">
     <transition name="page-fade-slide" mode="out-in">
       <keep-alive include="Home,Blog">
-        <component :is="Component" :key="route.name" />
+        <component :is="Component" :key="route.name === 'Blog' ? `Blog-${route.params.slug}` : route.name" />
       </keep-alive>
     </transition>
   </router-view>

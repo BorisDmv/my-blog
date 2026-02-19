@@ -2,6 +2,8 @@
 defineOptions({ name: 'Blog' })
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useBlogCacheStore } from '@/stores/blogCache'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -18,6 +20,7 @@ const isCopied = ref(false)
 const shareUrl = ref('')
 const isDark = ref(false)
 const post = ref(null)
+const blogCache = useBlogCacheStore()
 const loading = ref(true)
 const error = ref('')
 
@@ -103,10 +106,21 @@ const editor = useEditor({
   },
 })
 
+
 const fetchPost = async () => {
   const slug = route.params.slug
   if (!slug) {
     error.value = 'Missing post slug.'
+    loading.value = false
+    return
+  }
+  // Try cache first
+  const cached = blogCache.getPost(slug)
+  if (cached) {
+    post.value = cached
+    if (editor.value) {
+      editor.value.commands.setContent(post.value?.content ?? '')
+    }
     loading.value = false
     return
   }
@@ -115,6 +129,7 @@ const fetchPost = async () => {
   try {
     const response = await apiClient.get(`/api/post/${slug}`)
     post.value = response.data ?? null
+    blogCache.setPost(slug, post.value)
     if (editor.value) {
       editor.value.commands.setContent(post.value?.content ?? '')
     }
