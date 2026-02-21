@@ -21,14 +21,37 @@ const handleOpenSearch = () => {
   emit('open-search')
 }
 
+
 const getToken = () => {
   const match = document.cookie.match(/(?:^|; )token=([^;]*)/)
   const tokenValue = match?.[1]
   return tokenValue ? decodeURIComponent(tokenValue) : null
 }
 
+const isTokenExpired = (token) => {
+  if (!token) return true
+  try {
+    // JWT format: header.payload.signature
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    // exp is in seconds
+    return Date.now() / 1000 > payload.exp
+  } catch (e) {
+    return true
+  }
+}
+
+const removeToken = () => {
+  document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+}
+
 onMounted(() => {
-  isAuthenticated.value = Boolean(getToken())
+  const token = getToken()
+  if (isTokenExpired(token)) {
+    removeToken()
+    isAuthenticated.value = false
+  } else {
+    isAuthenticated.value = true
+  }
 })
 </script>
 

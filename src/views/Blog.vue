@@ -312,19 +312,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
-.blog-content .ProseMirror > p:first-of-type::first-letter {
-  float: left;
-  font-size: 5rem;
-  line-height: 0.8;
-  font-weight: bold;
-  margin-right: 0.75rem;
-  margin-top: -0.25rem;
-  color: #111827;
-}
-
-.dark .blog-content .ProseMirror > p:first-of-type::first-letter {
-  color: #f8fafc;
-}
 
 .ProseMirror { outline: none; }
 
