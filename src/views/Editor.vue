@@ -44,7 +44,7 @@ const highlightColors = [
   { color: 'rgba(253, 230, 138, 0.7)', label: 'Yellow' },
   { color: 'rgba(134, 239, 172, 0.7)', label: 'Green' },
   { color: 'rgba(186, 230, 253, 0.7)', label: 'Blue' },
-  { color: 'rgba(253, 230, 138, 0.7)', label: 'Gold' },
+  { color: 'rgba(253, 186, 116, 0.7)', label: 'Orange' },
   { color: 'rgba(251, 207, 232, 0.7)', label: 'Pink' },
 ]
 

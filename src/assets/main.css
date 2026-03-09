@@ -61,8 +61,8 @@
     background-color: rgba(186, 230, 253, 0.7); /* blue */
     color: #19191c;
 }
-.ProseMirror mark[data-type="highlight"][data-color="#fde68a"] {
-    background-color: rgba(253, 230, 138, 0.7); /* gold (same as yellow for soft look) */
+.ProseMirror mark[data-type="highlight"][data-color="#fdba74"] {
+    background-color: rgba(253, 186, 116, 0.7); /* orange */
     color: #19191c;
 }
 .ProseMirror mark[data-type="highlight"][data-color="#fbcfe8"] {

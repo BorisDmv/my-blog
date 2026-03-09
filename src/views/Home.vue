@@ -129,10 +129,10 @@ onBeforeUnmount(() => {
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
           <div class="flex flex-col gap-5">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-              01 // The Logbook
+              01 // {{ import.meta.env.VITE_LOGBOOK_TITLE }}
             </h1>
             <p class="max-w-2xl text-base md:text-lg text-gray-500 dark:text-slate-400">
-              Observations on the craft of living and the art of building. No fluff, just the essentials.
+              {{ import.meta.env.VITE_LOGBOOK_DESC }}
             </p>
           </div>
         </div>
