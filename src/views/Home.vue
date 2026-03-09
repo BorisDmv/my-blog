@@ -1,5 +1,7 @@
 <script setup>
 defineOptions({ name: 'Home' })
+const logbookTitle = import.meta.env.VITE_LOGBOOK_TITLE;
+const logbookDesc = import.meta.env.VITE_LOGBOOK_DESC;
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import apiClient from '@/lib/axios'
@@ -129,10 +131,10 @@ onBeforeUnmount(() => {
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
           <div class="flex flex-col gap-5">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-              01 // {{ import.meta.env.VITE_LOGBOOK_TITLE }}
+              {{ logbookTitle }}
             </h1>
             <p class="max-w-2xl text-base md:text-lg text-gray-500 dark:text-slate-400">
-              {{ import.meta.env.VITE_LOGBOOK_DESC }}
+              {{ logbookDesc }}
             </p>
           </div>
         </div>
