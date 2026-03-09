@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
 
       <div class="border-b border-gray-200/70 dark:border-white/10">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
-          <div class="flex flex-col gap-5">
+          <div class="flex flex-col gap-3">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
               {{ logbookTitle }}
             </h1>
