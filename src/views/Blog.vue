@@ -14,6 +14,9 @@ import { Share2, Copy, X } from 'lucide-vue-next'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import AppBar from '@/components/AppBar.vue'
 
+// Get author image path from VITE_AUTHOR_IMAGE env variable
+const authorImage = import.meta.env.VITE_AUTHOR_IMAGE || '@/assets/authorimage.png'
+
 const route = useRoute()
 const isSearchOpen = ref(false)
 const isShareOpen = ref(false)
@@ -254,7 +257,7 @@ onBeforeUnmount(() => {
               <div class="flex items-center gap-4 mb-12 border-t border-b border-gray-100 py-6 dark:border-white/10">
                 <span class="w-15 h-15 flex items-center justify-center overflow-hidden">
                   <img
-                    src="@/assets/authorimage.png"
+                    :src="authorImage"
                     :alt="post?.author ?? 'Author'"
                     class="w-15 h-15 rounded-full object-cover border-2 border-transparent"
                     style="background: none;"
