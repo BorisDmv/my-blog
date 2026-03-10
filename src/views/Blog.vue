@@ -10,7 +10,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Highlight from '@tiptap/extension-highlight'
 import apiClient from '@/lib/axios'
-import { Share2, Copy, X } from 'lucide-vue-next'
+import { ArrowLeft, Share2, Copy, X } from 'lucide-vue-next'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import AppBar from '@/components/AppBar.vue'
 
@@ -191,7 +191,21 @@ onBeforeUnmount(() => {
           </div>
 
           <article class="col-span-12 lg:col-span-8 w-full max-w-6xl mx-auto min-h-[60vh]">
-            
+            <div class="mb-8 flex items-center justify-between">
+              <RouterLink
+                to="/"
+                class="group inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-gray-400 transition hover:text-gray-700 dark:text-slate-500 dark:hover:text-slate-200"
+              >
+                <span class="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200/70 bg-white/80 text-gray-500 shadow-sm transition group-hover:border-gray-300 group-hover:text-gray-900 group-hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:group-hover:border-white/20 dark:group-hover:text-white">
+                  <ArrowLeft class="h-4 w-4" />
+                </span>
+                <span class="relative">
+                  back to home
+                  <span class="absolute left-0 -bottom-1 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"></span>
+                </span>
+              </RouterLink>
+            </div>
+
             <div v-if="loading" class="animate-pulse">
               <header class="mb-10 text-center lg:text-left">
                 <div class="h-4 w-32 bg-gray-200 dark:bg-slate-800 rounded mb-4 mx-auto lg:mx-0"></div>
