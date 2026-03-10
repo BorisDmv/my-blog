@@ -82,19 +82,15 @@ onMounted(() => {
             <Search class="w-5 h-5" />
           </button>
           <button
-            class="relative flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-gray-300 hover:text-black dark:border-white/10 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
+            class="theme-toggle relative flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-gray-300 hover:text-black dark:border-white/10 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
+            :class="props.isDark ? 'theme-toggle--dark' : ''"
             @click.prevent="handleToggleTheme"
             aria-label="Toggle theme"
             type="button"
           >
-            <Sun
-              class="h-5 w-5 transition-all duration-300"
-              :class="props.isDark ? 'opacity-0 -rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'"
-            />
-            <Moon
-              class="absolute h-5 w-5 transition-all duration-300"
-              :class="props.isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-75'"
-            />
+            <span class="theme-toggle__bg" aria-hidden="true"></span>
+            <Sun class="theme-toggle__icon theme-toggle__sun h-5 w-5" />
+            <Moon class="theme-toggle__icon theme-toggle__moon h-5 w-5" />
           </button>
           <!-- Hamburger menu removed -->
         </div>
